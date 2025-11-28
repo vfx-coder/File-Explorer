@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFileManager - Enhanced</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .file-manager {
+            width: 100%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+            color: white;
+        }
+        
+        .header-text {
+            flex: 1;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 4px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            min-height: 500px;
+        }
+        
+        .actions-panel {
+            width: 30%;
+            background: #f8f9fa;
+            padding: 25px;
+            border-right: 1px solid #eaeaea;
+        }
+        
+        .actions-panel h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-size: 1rem;
+            color: #2c3e50;
+        }
+        
+        .action-btn:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .action-btn:disabled {
+            background: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .action-btn i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .content-panel {
+            width: 70%;
+            padding: 25px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-panel h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 8px;
+        }
+        
+        .file-list-container {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .file-list {
+            list-style: none;
+        }
+        
+        .file-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        
+        .file-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .file-item.selected {
+            background: #e3f2fd;
+            border-left: 4px solid #3498db;
+        }
+        
+        .file-item i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .folder i {
+            color: #f39c12;
+        }
+        
+        .file-item.image i {
+            color: #e74c3c;
+        }
+        
+        .file-item.pdf i {
+            color: #e74c3c;
+        }
+        
+        .file-item.word i {
+            color: #2c5fa3;
+        }
+        
+        .status-message {
+            background: #e8f5e9;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #2e7d32;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-message.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .status-message i {
+            margin-right: 10px;
+            color: #4caf50;
+        }
+        
+        .status-message.error i {
+            color: #f44336;
+        }
+        
+        .current-path {
+            background: #e3f2fd;
+            padding: 12px 15px;
+            border-radius: 8px;
+            color: #1565c0;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .current-path i {
+            margin-right: 10px;
+            color: #1976d2;
+        }
+        
+        .creative-footer {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .footer-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .shape-1 {
+            width: 80px;
+            height: 80px;
+            top: -30px;
+            right: 10%;
+        }
+        
+        .shape-2 {
+            width: 50px;
+            height: 50px;
+            bottom: -20px;
+            left: 15%;
+        }
+        
+        .shape-3 {
+            width: 30px;
+            height: 30px;
+            top: 40%;
+            right: 20%;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .modal input, .modal select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .modal-btn.primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .modal-btn.secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .modal-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .file-input-container {
+            margin-bottom: 15px;
+        }
+        
+        .file-input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .file-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px dashed #3498db;
+            border-radius: 6px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .file-input:hover {
+            background: #e3f2fd;
+        }
+        
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .file-preview {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            background: #f8f9fa;
+            max-height: 500px;
+            overflow-y: auto;
+            text-align: center;
+        }
+        
+        .file-preview h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .file-content {
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            text-align: left;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .pdf-preview, .word-preview {
+            padding: 20px;
+            background: white;
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .pdf-preview i, .word-preview i {
+            font-size: 4rem;
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+        
+        .word-preview i {
+            color: #2c5fa3;
+        }
+        
+        .preview-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .preview-action-btn {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .preview-action-btn:hover {
+            background: #2980b9;
+        }
+        
+        .open-btn {
+            margin-left: auto;
+            padding: 6px 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s;
+        }
+        
+        .open-btn:hover {
+            background: #2980b9;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .breadcrumb-item {
+            color: #3498db;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .breadcrumb-item:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb-separator {
+            margin: 0 8px;
+            color: #666;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 5px;
+            margin-left: auto;
+        }
+        
+        .file-action-btn {
+            padding: 4px 8px;
+            background: transparent;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s;
+        }
+        
+        .file-action-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .actions-panel, .content-panel {
+                width: 100%;
+            }
+            
+            .actions-panel {
+                border-right: none;
+                border-bottom: 1px solid #eaeaea;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .logo-container {
+                justify-content: center;
+            }
+            
+            .file-actions {
+                flex-direction: column;
+                gap: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="file-manager">
+        <header>
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                <div class="header-text">
+                    <h1>MyFileManager</h1>
+                    <p class="subtitle">Manage your Files and Folders</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="actions-panel">
+                <h2>Actions</h2>
+                <button class="action-btn" id="createFolderBtn">
+                    <i class="fas fa-folder-plus"></i> Create Folder
+                </button>
+                <button class="action-btn" id="renameBtn" disabled>
+                    <i class="fas fa-edit"></i> Rename
+                </button>
+                <button class="action-btn" id="copyFileInBtn">
+                    <i class="fas fa-copy"></i> Copy File In
+                </button>
+                <button class="action-btn" id="copyFileOutBtn" disabled>
+                    <i class="fas fa-share-square"></i> Copy File Out
+                </button>
+                <button class="action-btn" id="deleteBtn" disabled>
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+                <button class="action-btn" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="action-btn" id="selectFilesBtn">
+                    <i class="fas fa-folder-open"></i> Select Files from Device
+                </button>
+                <button class="action-btn" id="openBtn" disabled>
+                    <i class="fas fa-folder-open"></i> Open Selected
+                </button>
+                <button class="action-btn" id="goBackBtn">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </button>
+            </div>
+            
+            <div class="content-panel">
+                <h2>Files & Folders</h2>
+                <div class="breadcrumb" id="breadcrumb">
+                    <!-- Breadcrumb will be dynamically generated -->
+                </div>
+                <div class="status-message" id="statusMessage">
+                    <i class="fas fa-check-circle"></i> Successfully loaded.
+                </div>
+                
+                <div class="file-list-container">
+                    <ul class="file-list" id="fileList">
+                        <!-- File items will be dynamically generated -->
+                    </ul>
+                </div>
+                
+                <div class="current-path">
+                    <i class="fas fa-folder-open"></i> Current Path: <span id="currentPath">/</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="creative-footer">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+            <div class="footer-text">
+                Secure File Management System
+            </div>
+            <div class="footer-info">
+                <span><i class="fas fa-hdd"></i> Storage: 15.2 GB / 100 GB</span>
+                <span><i class="fas fa-user"></i> User: Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals for different actions -->
+    <div class="modal" id="createFolderModal">
+        <div class="modal-content">
+            <h3>Create New Folder</h3>
+            <input type="text" id="folderName" placeholder="Enter folder name">
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" id="cancelFolder">Cancel</button>
+                <button class="modal-btn primary" id="createFolder">Create</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="renameModal">
+        <div class="modal-content">
+            <h3>Rename Item</h3>
+            <input type="text" id="newItemName" placeholder="Enter new name">
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" id="cancelRename">Cancel</button>
+                <button class="modal-btn primary" id="renameItem">Rename</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="copyFileInModal">
+        <div class="modal-content">
+            <h3>Copy File In</h3>
+            <p>Select how you want to copy files:</p>
+            <div class="file-input-container">
+                <label class="file-input-label">Option 1: Select from your device</label>
+                <input type="file" id="deviceFileInput" class="file-input" multiple>
+                <div class="file-info">You can select multiple files</div>
+            </div>
+            
+            <div class="file-input-container">
+                <label class="file-input-label">Option 2: Duplicate existing file</label>
+                <select id="existingFileSelect">
+                    <option value="">Select a file to duplicate</option>
+                </select>
+                <input type="text" id="duplicateFileName" placeholder="Enter new file name">
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" id="cancelCopyIn">Cancel</button>
+                <button class="modal-btn primary" id="copyFileIn">Copy</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h3>Confirm Delete</h3>
+            <p id="deleteMessage">Are you sure you want to delete the selected item?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" id="cancelDelete">Cancel</button>
+                <button class="modal-btn primary" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="filePreviewModal">
+        <div class="modal-content">
+            <h3 id="previewTitle">File Preview</h3>
+            <div class="file-preview" id="filePreview">
+                <!-- Preview content will be dynamically generated -->
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" id="closePreview">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced file system data structure with folder hierarchy - CLEAN START
+        let fileSystem = {
+            root: {
+                id: 'root',
+                name: '',
+                type: 'folder',
+                path: '/',
+                children: [] // Empty - no pre-created folders
+            }
+        };
+
+        let currentFolder = fileSystem.root;
+        let selectedItem = null;
+        let folderHistory = [];
+
+        // Initialize the file manager
+        document.addEventListener('DOMContentLoaded', function() {
+            renderFileList();
+            setupEventListeners();
+            populateExistingFiles();
+            updateBreadcrumb();
+        });
+
+        // Get file type and icon
+        function getFileTypeInfo(fileName, fileType) {
+            const extension = fileName.split('.').pop().toLowerCase();
+            
+            if (fileType && fileType.startsWith('image/')) {
+                return { type: 'image', icon: 'fa-file-image', class: 'image' };
+            }
+            
+            switch (extension) {
+                case 'png':
+                case 'jpg':
+                case 'jpeg':
+                case 'gif':
+                case 'bmp':
+                case 'svg':
+                    return { type: 'image', icon: 'fa-file-image', class: 'image' };
+                case 'pdf':
+                    return { type: 'pdf', icon: 'fa-file-pdf', class: 'pdf' };
+                case 'doc':
+                case 'docx':
+                    return { type: 'word', icon: 'fa-file-word', class: 'word' };
+                case 'txt':
+                case 'md':
+                case 'json':
+                case 'js':
+                case 'html':
+                case 'css':
+                    return { type: 'text', icon: 'fa-file-alt', class: 'text' };
+                default:
+                    return { type: 'other', icon: 'fa-file', class: 'other' };
+            }
+        }
+
+        // Render the file list based on current folder
+        function renderFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            if (!currentFolder.children || currentFolder.children.length === 0) {
+                fileList.innerHTML = '<li class="file-item" style="justify-content: center; color: #666;">This folder is empty</li>';
+            } else {
+                currentFolder.children.forEach(item => {
+                    const li = document.createElement('li');
+                    const fileInfo = item.type === 'file' ? getFileTypeInfo(item.name, item.fileType) : { type: 'folder', icon: 'fa-folder', class: 'folder' };
+                    
+                    li.className = `file-item ${fileInfo.class} ${selectedItem === item ? 'selected' : ''}`;
+                    li.innerHTML = `
+                        <i class="fas ${fileInfo.icon}"></i>
+                        <div style="flex-grow: 1;">
+                            <div>${item.name}</div>
+                            ${item.size ? `<div style="font-size: 0.8rem; color: #666;">${item.size}</div>` : ''}
+                        </div>
+                        <div class="file-actions">
+                            <button class="file-action-btn rename-btn" data-id="${item.id}" title="Rename">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="open-btn" data-id="${item.id}">
+                                <i class="fas fa-${item.type === 'folder' ? 'folder-open' : 'eye'}"></i> Open
+                            </button>
+                        </div>
+                    `;
+                    li.addEventListener('click', (e) => {
+                        if (!e.target.closest('.file-action-btn') && !e.target.closest('.open-btn')) {
+                            selectItem(item);
+                        }
+                    });
+                    fileList.appendChild(li);
+                });
+            }
+            
+            document.getElementById('currentPath').textContent = currentFolder.path;
+            
+            // Update button states
+            document.getElementById('deleteBtn').disabled = !selectedItem;
+            document.getElementById('copyFileOutBtn').disabled = !selectedItem || selectedItem.type === 'folder';
+            document.getElementById('openBtn').disabled = !selectedItem;
+            document.getElementById('renameBtn').disabled = !selectedItem;
+            
+            // Add event listeners to open buttons
+            document.querySelectorAll('.open-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const itemId = this.getAttribute('data-id');
+                    const item = findItemById(currentFolder, itemId);
+                    if (item) {
+                        openItem(item);
+                    }
+                });
+            });
+            
+            // Add event listeners to rename buttons
+            document.querySelectorAll('.rename-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const itemId = this.getAttribute('data-id');
+                    const item = findItemById(currentFolder, itemId);
+                    if (item) {
+                        renameItem(item);
+                    }
+                });
+            });
+        }
+
+        // Find item by ID in the current folder
+        function findItemById(folder, id) {
+            if (!folder.children) return null;
+            return folder.children.find(item => item.id === id);
+        }
+
+        // Set up event listeners for buttons
+        function setupEventListeners() {
+            // Create Folder
+            document.getElementById('createFolderBtn').addEventListener('click', () => {
+                document.getElementById('createFolderModal').style.display = 'flex';
+            });
+            
+            document.getElementById('createFolder').addEventListener('click', createFolder);
+            document.getElementById('cancelFolder').addEventListener('click', () => {
+                document.getElementById('createFolderModal').style.display = 'none';
+            });
+            
+            // Rename
+            document.getElementById('renameBtn').addEventListener('click', () => {
+                if (selectedItem) {
+                    renameItem(selectedItem);
+                }
+            });
+            
+            document.getElementById('renameItem').addEventListener('click', performRename);
+            document.getElementById('cancelRename').addEventListener('click', () => {
+                document.getElementById('renameModal').style.display = 'none';
+            });
+            
+            // Copy File In
+            document.getElementById('copyFileInBtn').addEventListener('click', () => {
+                document.getElementById('copyFileInModal').style.display = 'flex';
+            });
+            
+            document.getElementById('copyFileIn').addEventListener('click', copyFileIn);
+            document.getElementById('cancelCopyIn').addEventListener('click', () => {
+                document.getElementById('copyFileInModal').style.display = 'none';
+                resetCopyInModal();
+            });
+            
+            // Select Files from Device
+            document.getElementById('selectFilesBtn').addEventListener('click', () => {
+                document.getElementById('deviceFileInput').click();
+            });
+            
+            document.getElementById('deviceFileInput').addEventListener('change', handleFileSelect);
+            
+            // Copy File Out
+            document.getElementById('copyFileOutBtn').addEventListener('click', copyFileOut);
+            
+            // Delete
+            document.getElementById('deleteBtn').addEventListener('click', () => {
+                if (!selectedItem) {
+                    showStatus('Please select an item to delete', 'error');
+                    return;
+                }
+                document.getElementById('deleteMessage').textContent = 
+                    `Are you sure you want to delete "${selectedItem.name}"?`;
+                document.getElementById('deleteModal').style.display = 'flex';
+            });
+            
+            document.getElementById('confirmDelete').addEventListener('click', deleteItem);
+            document.getElementById('cancelDelete').addEventListener('click', () => {
+                document.getElementById('deleteModal').style.display = 'none';
+            });
+            
+            // Refresh
+            document.getElementById('refreshBtn').addEventListener('click', refresh);
+            
+            // Open Selected
+            document.getElementById('openBtn').addEventListener('click', () => {
+                if (selectedItem) {
+                    openItem(selectedItem);
+                }
+            });
+            
+            // Go Back
+            document.getElementById('goBackBtn').addEventListener('click', goBack);
+            
+            // Close Preview
+            document.getElementById('closePreview').addEventListener('click', () => {
+                document.getElementById('filePreviewModal').style.display = 'none';
+            });
+            
+            // Double click to open files/folders
+            document.addEventListener('dblclick', (e) => {
+                if (e.target.closest('.file-item')) {
+                    const fileItem = e.target.closest('.file-item');
+                    const openBtn = fileItem.querySelector('.open-btn');
+                    if (openBtn) {
+                        const itemId = openBtn.getAttribute('data-id');
+                        const item = findItemById(currentFolder, itemId);
+                        if (item) {
+                            openItem(item);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update breadcrumb navigation
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumb');
+            breadcrumb.innerHTML = '';
+            
+            const pathParts = currentFolder.path.split('/').filter(part => part !== '');
+            
+            // Add root
+            const rootItem = document.createElement('span');
+            rootItem.className = 'breadcrumb-item';
+            rootItem.textContent = 'Root';
+            rootItem.addEventListener('click', () => navigateToFolder(fileSystem.root));
+            breadcrumb.appendChild(rootItem);
+            
+            // Add path parts
+            let currentPath = '';
+            for (let i = 0; i < pathParts.length; i++) {
+                const separator = document.createElement('span');
+                separator.className = 'breadcrumb-separator';
+                separator.textContent = '/';
+                breadcrumb.appendChild(separator);
+                
+                currentPath += '/' + pathParts[i];
+                
+                const pathItem = document.createElement('span');
+                pathItem.className = 'breadcrumb-item';
+                pathItem.textContent = pathParts[i];
+                
+                // Find the folder for this path
+                const folder = findFolderByPath(currentPath);
+                if (folder) {
+                    pathItem.addEventListener('click', () => navigateToFolder(folder));
+                }
+                
+                breadcrumb.appendChild(pathItem);
+            }
+        }
+
+        // Find folder by path
+        function findFolderByPath(path) {
+            if (path === '/') return fileSystem.root;
+            
+            const parts = path.split('/').filter(part => part !== '');
+            let current = fileSystem.root;
+            
+            for (const part of parts) {
+                if (current.children) {
+                    const found = current.children.find(child => child.name === part && child.type === 'folder');
+                    if (found) {
+                        current = found;
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            }
+            
+            return current;
+        }
+
+        // Navigate to a folder
+        function navigateToFolder(folder) {
+            folderHistory.push(currentFolder);
+            currentFolder = folder;
+            selectedItem = null;
+            renderFileList();
+            updateBreadcrumb();
+            showStatus(`Opened folder: ${folder.name || 'Root'}`);
+        }
+
+        // Go back to previous folder
+        function goBack() {
+            if (folderHistory.length > 0) {
+                currentFolder = folderHistory.pop();
+                selectedItem = null;
+                renderFileList();
+                updateBreadcrumb();
+                showStatus(`Navigated back to: ${currentFolder.name || 'Root'}`);
+            } else {
+                showStatus('Already at root folder', 'error');
+            }
+        }
+
+        // Populate the existing files dropdown
+        function populateExistingFiles() {
+            const select = document.getElementById('existingFileSelect');
+            select.innerHTML = '<option value="">Select a file to duplicate</option>';
+            
+            // Get all files from the entire file system
+            const allFiles = getAllFiles(fileSystem.root);
+            allFiles.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file.id;
+                option.textContent = `${file.name} (${file.size})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Get all files from the file system
+        function getAllFiles(folder) {
+            let files = [];
+            
+            if (folder.children) {
+                folder.children.forEach(item => {
+                    if (item.type === 'file') {
+                        files.push(item);
+                    } else if (item.type === 'folder') {
+                        files = files.concat(getAllFiles(item));
+                    }
+                });
+            }
+            
+            return files;
+        }
+
+        // Select an item in the file list
+        function selectItem(item) {
+            selectedItem = item;
+            renderFileList();
+        }
+
+        // Open a file or folder with enhanced preview for different file types
+        function openItem(item) {
+            if (item.type === 'folder') {
+                // For folders, navigate to that folder
+                navigateToFolder(item);
+            } else {
+                // For files, show a preview based on file type
+                const fileInfo = getFileTypeInfo(item.name, item.fileType);
+                document.getElementById('previewTitle').textContent = `Preview: ${item.name}`;
+                const previewContainer = document.getElementById('filePreview');
+                
+                switch (fileInfo.type) {
+                    case 'image':
+                        previewContainer.innerHTML = `
+                            <h4>Image Preview</h4>
+                            <img src="${item.previewUrl}" alt="${item.name}" class="image-preview">
+                            <div class="preview-actions">
+                                <button class="preview-action-btn" onclick="downloadFile('${item.id}')">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                                <button class="preview-action-btn" onclick="openImageFullSize('${item.previewUrl}')">
+                                    <i class="fas fa-external-link-alt"></i> Open Full Size
+                                </button>
+                            </div>
+                        `;
+                        break;
+                    
+                    case 'pdf':
+                        previewContainer.innerHTML = `
+                            <h4>PDF Document</h4>
+                            <div class="pdf-preview">
+                                <i class="fas fa-file-pdf"></i>
+                                <p>This is a PDF document: <strong>${item.name}</strong></p>
+                                <p>Size: ${item.size}</p>
+                                <p><strong>PDF Preview Available:</strong> The PDF content is stored and can be downloaded.</p>
+                                <div class="preview-actions">
+                                    <button class="preview-action-btn" onclick="downloadFile('${item.id}')">
+                                        <i class="fas fa-download"></i> Download PDF
+                                    </button>
+                                    <button class="preview-action-btn" onclick="viewPdfContent('${item.id}')">
+                                        <i class="fas fa-eye"></i> View Content
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                    
+                    case 'word':
+                        previewContainer.innerHTML = `
+                            <h4>Word Document</h4>
+                            <div class="word-preview">
+                                <i class="fas fa-file-word"></i>
+                                <p>This is a Word document: <strong>${item.name}</strong></p>
+                                <p>Size: ${item.size}</p>
+                                <p><strong>Content Preview:</strong></p>
+                                <div class="file-content">${item.content || 'No content preview available.'}</div>
+                                <div class="preview-actions">
+                                    <button class="preview-action-btn" onclick="downloadFile('${item.id}')">
+                                        <i class="fas fa-download"></i> Download Word Document
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                    
+                    case 'text':
+                    default:
+                        previewContainer.innerHTML = `
+                            <h4>Content:</h4>
+                            <div class="file-content">${item.content || 'No content available for this file.'}</div>
+                            <div class="preview-actions">
+                                <button class="preview-action-btn" onclick="downloadFile('${item.id}')">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        `;
+                        break;
+                }
+                
+                document.getElementById('filePreviewModal').style.display = 'flex';
+                showStatus(`Opened file: ${item.name}`);
+            }
+        }
+
+        // Open image in full size
+        function openImageFullSize(imageUrl) {
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Image Preview - Full Size</title>
+                    <style>
+                        body { 
+                            margin: 0; 
+                            padding: 20px; 
+                            display: flex; 
+                            justify-content: center; 
+                            align-items: center; 
+                            min-height: 100vh;
+                            background: #f0f0f0;
+                        }
+                        img { 
+                            max-width: 90vw; 
+                            max-height: 90vh; 
+                            border-radius: 8px;
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                        }
+                    </style>
+                </head>
+                <body>
+                    <img src="${imageUrl}" alt="Full Size Image">
+                </body>
+                </html>
+            `);
+            newWindow.document.close();
+        }
+
+        // View PDF content
+        function viewPdfContent(fileId) {
+            const file = findFileById(fileSystem.root, fileId);
+            if (!file) return;
+            
+            // For PDF files, show the stored content
+            const previewContainer = document.getElementById('filePreview');
+            previewContainer.innerHTML = `
+                <h4>PDF Content Preview</h4>
+                <div class="file-content">${file.content || 'No text content available for this PDF.'}</div>
+                <div class="preview-actions">
+                    <button class="preview-action-btn" onclick="downloadFile('${file.id}')">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                </div>
+            `;
+        }
+
+        // Download file
+        function downloadFile(fileId) {
+            const file = findFileById(fileSystem.root, fileId);
+            if (!file) return;
+            
+            const link = document.createElement('a');
+            let blob;
+            
+            if (file.previewUrl && file.fileType && file.fileType.startsWith('image/')) {
+                // For images, use the preview URL
+                link.href = file.previewUrl;
+                link.download = file.name;
+            } else if (file.content) {
+                // For other files, create a blob from content
+                blob = new Blob([file.content], { type: 'text/plain' });
+                link.href = URL.createObjectURL(blob);
+                link.download = file.name;
+            } else {
+                showStatus('Cannot download this file', 'error');
+                return;
+            }
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            if (blob) {
+                URL.revokeObjectURL(link.href);
+            }
+        }
+
+        // Rename item functionality
+        function renameItem(item) {
+            document.getElementById('newItemName').value = item.name;
+            document.getElementById('renameModal').style.display = 'flex';
+            document.getElementById('renameItem').onclick = function() {
+                performRename(item);
+            };
+        }
+
+        // Perform the rename operation
+        function performRename(originalItem = null) {
+            const itemToRename = originalItem || selectedItem;
+            if (!itemToRename) return;
+            
+            const newName = document.getElementById('newItemName').value.trim();
+            if (!newName) {
+                showStatus('Please enter a new name', 'error');
+                return;
+            }
+            
+            // Check if name already exists (excluding the current item)
+            if (currentFolder.children && currentFolder.children.some(item => 
+                item !== itemToRename && item.name === newName)) {
+                showStatus(`An item named "${newName}" already exists`, 'error');
+                return;
+            }
+            
+            const oldName = itemToRename.name;
+            itemToRename.name = newName;
+            
+            // Update path for folders and their children
+            if (itemToRename.type === 'folder') {
+                updateFolderPaths(itemToRename, oldName);
+            } else {
+                // For files, just update the path
+                itemToRename.path = currentFolder.path + (currentFolder.path === '/' ? '' : '/') + newName;
+            }
+            
+            document.getElementById('renameModal').style.display = 'none';
+            renderFileList();
+            populateExistingFiles();
+            showStatus(`"${oldName}" renamed to "${newName}"`);
+        }
+
+        // Update paths for folder and all its children
+        function updateFolderPaths(folder, oldName) {
+            const oldPath = folder.path;
+            folder.path = currentFolder.path + (currentFolder.path === '/' ? '' : '/') + folder.name;
+            
+            if (folder.children) {
+                folder.children.forEach(child => {
+                    if (child.type === 'folder') {
+                        updateFolderPaths(child, oldName);
+                    } else {
+                        child.path = child.path.replace(oldPath, folder.path);
+                    }
+                });
+            }
+        }
+
+        // Create a new folder
+        function createFolder() {
+            const folderName = document.getElementById('folderName').value.trim();
+            if (!folderName) {
+                showStatus('Please enter a folder name', 'error');
+                return;
+            }
+            
+            // Check if folder already exists
+            if (currentFolder.children && currentFolder.children.some(item => item.name === folderName)) {
+                showStatus(`A folder named "${folderName}" already exists`, 'error');
+                return;
+            }
+            
+            // Initialize children array if it doesn't exist
+            if (!currentFolder.children) {
+                currentFolder.children = [];
+            }
+            
+            // Add new folder
+            currentFolder.children.push({
+                id: 'folder-' + Date.now(),
+                name: folderName,
+                type: 'folder',
+                path: currentFolder.path + (currentFolder.path === '/' ? '' : '/') + folderName,
+                children: []
+            });
+            
+            document.getElementById('createFolderModal').style.display = 'none';
+            document.getElementById('folderName').value = '';
+            renderFileList();
+            populateExistingFiles();
+            showStatus(`Folder "${folderName}" created successfully`);
+        }
+
+        // Handle file selection from device with enhanced file type support
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files.length === 0) return;
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileName = file.name;
+                const fileInfo = getFileTypeInfo(fileName, file.type);
+                
+                // Check if file already exists
+                if (currentFolder.children && currentFolder.children.some(item => item.name === fileName)) {
+                    showStatus(`File "${fileName}" already exists`, 'error');
+                    continue;
+                }
+                
+                // Initialize children array if it doesn't exist
+                if (!currentFolder.children) {
+                    currentFolder.children = [];
+                }
+                
+                // Handle different file types
+                if (fileInfo.type === 'image') {
+                    // For images, create a preview URL and store content
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        currentFolder.children.push({
+                            id: 'file-' + Date.now(),
+                            name: fileName,
+                            type: 'file',
+                            fileType: file.type,
+                            path: currentFolder.path + (currentFolder.path === '/' ? '' : '/') + fileName,
+                            size: formatFileSize(file.size),
+                            previewUrl: e.target.result,
+                            content: `Image file: ${fileName}\nSize: ${formatFileSize(file.size)}\nType: ${file.type}\nDimensions: Preview available`
+                        });
+                        
+                        renderFileList();
+                        populateExistingFiles();
+                        showStatus(`Image "${fileName}" added successfully`);
+                    };
+                    reader.readAsDataURL(file);
+                } else if (fileInfo.type === 'pdf') {
+                    // For PDF files, try to extract text content
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        // Store both the file data and attempt to extract text
+                        const pdfContent = `PDF Document: ${fileName}\nSize: ${formatFileSize(file.size)}\nType: ${file.type}\n\nThis PDF file has been uploaded successfully. Use the "View Content" button to see extracted text.`;
+                        
+                        currentFolder.children.push({
+                            id: 'file-' + Date.now(),
+                            name: fileName,
+                            type: 'file',
+                            fileType: file.type,
+                            path: currentFolder.path + (currentFolder.path === '/' ? '' : '/') + fileName,
+                            size: formatFileSize(file.size),
+                            previewUrl: e.target.result,
+                            content: pdfContent
+                        });
+                        
+                        renderFileList();
+                        populateExistingFiles();
+                        showStatus(`PDF file "${fileName}" added successfully`);
+                    };
+                    reader.readAsDataURL(file);
+                } else if (fileInfo.type === 'text') {
+                    // For text files, read content
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const content = e.target.result;
+                        currentFolder.children.push({
+                            id: 'file-' + Date.now(),
+                            name: fileName,
+                            type: 'file',
+                            fileType: file.type,
+                            path: currentFolder.path + (currentFolder.path === '/' ? '' : '/') + fileName,
+                            size: formatFileSize(file.size),
+                            content: content.substring(0, 5000) + (content.length > 5000 ? '\n\n... (content truncated)' : '')
+                        });
+                        
+                        renderFileList();
+                        populateExistingFiles();
+                        showStatus(`File "${fileName}" added successfully`);
+                    };
+                    reader.readAsText(file);
+                } else {
+                    // For other files (Word, etc.)
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        currentFolder.children.push({
+                            id: 'file-' + Date.now(),
+                            name: fileName,
+                            type: 'file',
+                            fileType: file.type,
+                            path: currentFolder.path + (currentFolder.path === '/' ? '' : '/') + fileName,
+                            size: formatFileSize(file.size),
+                            content: `This is a ${fileInfo.type} file.\n\nFile name: ${fileName}\nFile size: ${formatFileSize(file.size)}\nFile type: ${file.type}\n\nTo view the actual content, please use appropriate software.`
+                        });
+                        
+                        renderFileList();
+                        populateExistingFiles();
+                        showStatus(`${fileInfo.type.toUpperCase()} file "${fileName}" added successfully`);
+                    };
+                    reader.readAsText(file);
+                }
+            }
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        // Copy a file into the current directory
+        function copyFileIn() {
+            const deviceFiles = document.getElementById('deviceFileInput').files;
+            const existingFileId = document.getElementById('existingFileSelect').value;
+            const duplicateFileName = document.getElementById('duplicateFileName').value.trim();
+            
+            // Handle device file selection
+            if (deviceFiles.length > 0) {
+                handleFileSelect({ target: { files: deviceFiles } });
+                document.getElementById('copyFileInModal').style.display = 'none';
+                resetCopyInModal();
+                return;
+            }
+            
+            // Handle file duplication
+            if (existingFileId && duplicateFileName) {
+                const originalFile = findFileById(fileSystem.root, existingFileId);
+                if (!originalFile) {
+                    showStatus('Selected file not found', 'error');
+                    return;
+                }
+                
+                // Check if file already exists
+                if (currentFolder.children && currentFolder.children.some(item => item.name === duplicateFileName)) {
+                    showStatus(`A file named "${duplicateFileName}" already exists`, 'error');
+                    return;
+                }
+                
+                // Initialize children array if it doesn't exist
+                if (!currentFolder.children) {
+                    currentFolder.children = [];
+                }
+                
+                // Create duplicate file
+                currentFolder.children.push({
+                    id: 'file-' + Date.now(),
+                    name: duplicateFileName,
+                    type: 'file',
+                    fileType: originalFile.fileType,
+                    path: currentFolder.path + (currentFolder.path === '/' ? '' : '/') + duplicateFileName,
+                    size: originalFile.size,
+                    previewUrl: originalFile.previewUrl,
+                    content: originalFile.content
+                });
+                
+                document.getElementById('copyFileInModal').style.display = 'none';
+                resetCopyInModal();
+                renderFileList();
+                populateExistingFiles();
+                showStatus(`File "${duplicateFileName}" created as a copy of "${originalFile.name}"`);
+                return;
+            }
+            
+            showStatus('Please select files to copy or specify a file to duplicate', 'error');
+        }
+
+        // Find file by ID in the entire file system
+        function findFileById(folder, id) {
+            if (folder.id === id) return folder;
+            
+            if (folder.children) {
+                for (const item of folder.children) {
+                    if (item.id === id) return item;
+                    if (item.type === 'folder') {
+                        const found = findFileById(item, id);
+                        if (found) return found;
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        // Copy a file out (simulate download)
+        function copyFileOut() {
+            if (!selectedItem) {
+                showStatus('Please select a file to copy out', 'error');
+                return;
+            }
+            
+            if (selectedItem.type === 'folder') {
+                showStatus('Cannot copy out folders, only files', 'error');
+                return;
+            }
+            
+            downloadFile(selectedItem.id);
+            showStatus(`File "${selectedItem.name}" copied out successfully`);
+        }
+
+        // Delete the selected item
+        function deleteItem() {
+            if (!selectedItem) return;
+            
+            const itemName = selectedItem.name;
+            
+            // Remove from current folder's children
+            if (currentFolder.children) {
+                currentFolder.children = currentFolder.children.filter(item => item !== selectedItem);
+            }
+            
+            selectedItem = null;
+            
+            document.getElementById('deleteModal').style.display = 'none';
+            renderFileList();
+            populateExistingFiles();
+            showStatus(`"${itemName}" deleted successfully`);
+        }
+
+        // Refresh the file list
+        function refresh() {
+            showStatus('File list refreshed');
+            renderFileList();
+            populateExistingFiles();
+        }
+
+        // Reset the copy file in modal
+        function resetCopyInModal() {
+            document.getElementById('deviceFileInput').value = '';
+            document.getElementById('existingFileSelect').value = '';
+            document.getElementById('duplicateFileName').value = '';
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Show status message
+        function showStatus(message, type = 'success') {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                ${message}
+            `;
+            
+            if (type === 'error') {
+                statusElement.classList.add('error');
+            } else {
+                statusElement.classList.remove('error');
+            }
+            
+            // Auto-hide success messages after 3 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusElement.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        Successfully loaded.
+                    `;
+                    statusElement.classList.remove('error');
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>
